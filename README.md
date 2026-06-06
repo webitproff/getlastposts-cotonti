@@ -227,7 +227,7 @@ plugins/getlastposts/
 Pass an array of category codes as the second parameter:
 
 ```smarty
-{PHP|cot_forums_getLastPosts(10, ['news', 'events', 'reviews'])}
+{PHP|cot_forums_getLastPosts(10, 'plugs,lifehack,original', 'getlastposts.sidebar')}
 ```
 
 ### Posts from a required category are not displayed
@@ -472,16 +472,16 @@ plugins/getlastposts/
 
 ### Плагин установлен, но ничего не выводится
 
-- Убедитесь, что модуль «Форумы» активен.
+- Бывает, что в админке плагина, после использования кнопки "Обновить" прекращается вывод списка последних постов в нужном месте.
 - Проверьте, есть ли в форуме сообщения, подходящие под указанные категории и доступные пользователю.
-- Временно включите отладку в `config.php` (`$cfg['debug_mode'] = true;`), чтобы увидеть возможные SQL-ошибки.
+- Самое простое - это тупо просто переустановите плагин в админке, или уделите обертку  (<!-- IF {PHP|cot_plugin_active('getlastposts')} --> и <!-- ENDIF -->) проверки в шаблоне и просто пропишите: `{PHP|cot_forums_getLastPosts(10, false, 'getlastposts.sidebar')}` 
 
 ### Как вывести сообщения из нескольких категорий?
 
 Передайте массив кодов категорий во втором параметре:
 
 ```smarty
-{PHP|cot_forums_getLastPosts(10, ['news', 'events', 'reviews'])}
+{PHP|cot_forums_getLastPosts(10, 'plugs,lifehack,original', 'getlastposts.sidebar')}
 ```
 
 ### Не отображаются сообщения из нужной категории
