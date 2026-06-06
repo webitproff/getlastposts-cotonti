@@ -218,9 +218,7 @@ plugins/getlastposts/
 
 ### The plugin is installed but nothing is displayed
 
-- Make sure the "Forums" module is active.
-- Check whether there are any forum posts matching the specified categories and accessible to the user.
-- Temporarily enable debugging in `config.php` (`$cfg['debug_mode'] = true;`) to see possible SQL errors.
+**[If something doesn't work out, it's better to post the problem on the forum.](https://abuyfile.com/en/forums/cotonti/custom/plugs)**
 
 ### How to display posts from several categories?
 
@@ -474,7 +472,8 @@ plugins/getlastposts/
 
 - Бывает, что в админке плагина, после использования кнопки "Обновить" прекращается вывод списка последних постов в нужном месте.
 - Проверьте, есть ли в форуме сообщения, подходящие под указанные категории и доступные пользователю.
-- Самое простое - это тупо просто переустановите плагин в админке, или уделите обертку  (<!-- IF {PHP|cot_plugin_active('getlastposts')} --> и <!-- ENDIF -->) проверки в шаблоне и просто пропишите: `{PHP|cot_forums_getLastPosts(10, false, 'getlastposts.sidebar')}` 
+- **Самое простое - это тупо просто переустановите плагин в админке, или уделите обертку  (`<!-- IF {PHP|cot_plugin_active('getlastposts')} -->` и `<!-- ENDIF -->`) проверки в шаблоне и просто пропишите: `{PHP|cot_forums_getLastPosts(10, false, 'getlastposts.sidebar')}`**
+- если ничего не помогло, - **[лучше писать на форуме](https://abuyfile.com/en/forums/cotonti/custom/plugs)**
 
 ### Как вывести сообщения из нескольких категорий?
 
