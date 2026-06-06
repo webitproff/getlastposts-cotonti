@@ -1,4 +1,259 @@
 
+
+# Get Last Forum Posts — Cotonti plugin
+
+Displays the latest forum posts anywhere on the site with a single function call in a template.  
+Flexible configuration, filtering by categories, and custom templates for each block.
+
+[![License](https://img.shields.io/badge/license-BSD-blue.svg)](LICENSE)
+
+## Table of contents
+
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Quick start](#quick-start)
+- [Function parameters](#function-parameters)
+- [Usage examples](#usage-examples)
+  - [Homepage block: all categories, default template](#homepage-block-all-categories-default-template)
+  - [Inline in an article: only one category](#inline-in-an-article-only-one-category)
+  - [Sidebar with a compact design](#sidebar-with-a-compact-design)
+  - [Different templates for different sections](#different-templates-for-different-sections)
+  - [Checking if the plugin is active](#checking-if-the-plugin-is-active)
+- [Plugin settings](#plugin-settings)
+- [How to create your own template](#how-to-create-your-own-template)
+- [File structure](#file-structure)
+- [Frequently asked questions](#frequently-asked-questions)
+- [License](#license)
+- [Author and support](#author-and-support)
+
+## Features
+
+- Output of any number of latest forum posts (default 5)
+- Filtering by one, several, or all forum categories
+- Configurable access right checks for categories (can be disabled)
+- Flexible template system: create your own tpl file and specify it when calling the function
+- Automatically hides moved and private topics
+- Truncation of long messages to a defined length with an ellipsis appended
+- Proper BBCode handling depending on the category settings
+
+## Requirements
+
+- **Cotonti** (up-to-date version recommended)
+- **The `forums` module** must be installed and activated
+
+## Installation
+
+1. Download the plugin archive and extract it to the `plugins/getlastposts/` folder of your site.
+2. Go to the Cotonti administration panel → **"Extensions"**.
+3. Find **"Get Last Forum Posts"** in the list and click **"Install"**.
+4. Done! The plugin is ready to be used in templates immediately.  
+   If you manually update the plugin files, after replacing them perform **"Reinstall"** to refresh the database record.
+
+## Quick start
+
+The simplest call in any template:
+
+```smarty
+{PHP|cot_forums_getLastPosts(5)}
+```
+
+This line will output **5 latest forum posts** from all categories accessible to the current user, using the default template `getlastposts.sidebar.tpl`.
+
+## Function parameters
+
+The function `cot_forums_getLastPosts()` accepts three arguments:
+
+```php
+cot_forums_getLastPosts(
+    int $count = 5,                                  // Number of posts
+    mixed $category = null,                          // Categories: null / false / '' = all accessible
+    string $template = 'getlastposts.sidebar'        // Template file name without the .tpl extension
+)
+```
+
+- **`$count`** – an integer that determines how many latest posts will be loaded.
+- **`$category`** – can be:
+  - `null`, `false` or `''` – display posts from all categories accessible to the user (taking into account permissions if the check is enabled);
+  - a string, e.g. `'news'` – only from the category with the code `news`;
+  - an array of strings, e.g. `['news', 'articles']` – from several categories simultaneously.
+- **`$template`** – the template file name from the `plugins/getlastposts/tpl/` folder. The default `'getlastposts.sidebar'` corresponds to the file `getlastposts.sidebar.tpl`.
+
+## Usage examples
+
+Let's look at several real-world scenarios.
+
+### Homepage block: all categories, default template
+
+Place the following code in the homepage template (`home.tpl` or `index.tpl`):
+
+```smarty
+<h3>Forum discussions</h3>
+{PHP|cot_forums_getLastPosts(7)}
+```
+
+It will display 7 latest posts from all public forum categories. The output is styled using the standard `getlastposts.sidebar.tpl` template.
+
+### Inline in an article: only one category
+
+Suppose your site has a page dedicated to company news, and you want to show recent discussions from the `company-news` forum category. In the page template (`page.tpl`), insert the following at the desired location:
+
+```smarty
+<!-- IF {PHP|cot_plugin_active('getlastposts')} -->
+<div class="card mt-4">
+  <div class="card-header">Latest discussions</div>
+  <div class="card-body">
+    {PHP|cot_forums_getLastPosts(10, 'company-news')}
+  </div>
+</div>
+<!-- ENDIF -->
+```
+
+If the `company-news` category is restricted to guests, the enabled "Consider access rights" setting will hide these posts from unauthorized users.
+
+### Sidebar with a compact design
+
+Sometimes the default design doesn't fit a narrow sidebar. Create a new template `getlastposts.compact.tpl` (see [How to create your own template](#how-to-create-your-own-template)) and call the plugin like this:
+
+```smarty
+{PHP|cot_forums_getLastPosts(5, null, 'getlastposts.compact')}
+```
+
+Now the block will use compact markup without extra spacing.
+
+### Different templates for different sections
+
+You can combine filtering and templates. For example, on the jobs page display discussions from the `jobs` category with one design, and in the blog — from `blog` with another:
+
+**In the jobs template:**
+```smarty
+{PHP|cot_forums_getLastPosts(6, 'jobs', 'getlastposts.jobs')}
+```
+
+**In the blog template:**
+```smarty
+{PHP|cot_forums_getLastPosts(8, 'blog', 'getlastposts.blog')}
+```
+
+The template files `getlastposts.jobs.tpl` and `getlastposts.blog.tpl` must be created beforehand in the plugin folder.
+
+### Checking if the plugin is active
+
+It is recommended to always wrap the plugin call in an activity check to avoid errors if the plugin is disabled:
+
+```smarty
+<!-- IF {PHP|cot_plugin_active('getlastposts')} -->
+    {PHP|cot_forums_getLastPosts(10, false, 'getlastposts.sidebar')}
+<!-- ENDIF -->
+```
+
+## Plugin settings
+
+Settings are located in the administration panel:  
+**Administration → Extensions → Get Last Forum Posts → Configuration**
+
+### Consider access rights for categories
+
+- **Enabled (1)** – the plugin checks whether the current user can read the category. If not, posts from that category are not displayed. This is the default value.
+- **Disabled (0)** – rights are not checked, all posts are displayed except those hidden by technical means (private topics, moved topics).
+
+## How to create your own template
+
+1. Go to the `plugins/getlastposts/tpl/` folder.
+2. Copy the file `getlastposts.sidebar.tpl` and rename it, e.g., to `getlastposts.custom.tpl`.
+3. Edit it to match your design. The basic template structure is:
+
+```smarty
+<!-- BEGIN: MAIN -->
+  <h6>{PHP.L.getlastposts_title}</h6>
+  <ul class="list-unstyled">
+    <!-- BEGIN: POST_ROW -->
+    <li class="bg-transparent">
+      <a href="{POST_ROW_TOPIC_URL}">{POST_ROW_TITLE}</a>
+      <br><small>{POST_ROW_POSTER}, {POST_ROW_DATE}</small>
+      <p class="text-muted">{POST_ROW_TEXT}</p>
+    </li>
+    <!-- END: POST_ROW -->
+    <!-- BEGIN: NO_POSTS -->
+    <li>{PHP.L.getlastposts_none}</li>
+    <!-- END: NO_POSTS -->
+  </ul>
+<!-- END: MAIN -->
+```
+
+4. Use the new template by specifying its name without `.tpl` in the third parameter of the function:  
+   `{PHP|cot_forums_getLastPosts(5, null, 'getlastposts.custom')}`
+
+### Available variables in POST_ROW
+
+- `{POST_ROW_ID}` – post identifier
+- `{POST_ROW_TOPIC_ID}` – topic identifier
+- `{POST_ROW_URL}` – direct link to the post
+- `{POST_ROW_TOPIC_URL}` – link to the topic
+- `{POST_ROW_TITLE}` – topic title (escaped)
+- `{POST_ROW_CAT_PATH}` – category breadcrumbs
+- `{POST_ROW_POSTER}` – author name (with profile link if possible)
+- `{POST_ROW_DATE}` – formatted date
+- `{POST_ROW_DATE_STAMP}` – Unix timestamp
+- `{POST_ROW_TEXT}` – truncated text preview without HTML tags
+- `{POST_ROW_ODDEVEN}` – CSS class for row parity (`even`/`odd`)
+- `{POST_ROW_NUM}` – sequential number starting from 1
+- `{POST_ROW}` – raw data array of the post (for advanced modifications)
+
+## File structure
+
+```
+plugins/getlastposts/
+├── getlastposts.setup.php        # Setup file (database registration)
+├── getlastposts.global.php       # Global hook, includes dependencies
+├── inc/
+│   └── getlastposts.functions.php # Main function cot_forums_getLastPosts()
+├── tpl/
+│   └── getlastposts.sidebar.tpl  # Default output template
+└── lang/
+    └── getlastposts.ru.lang      # Language strings (Russian)
+```
+
+## Frequently asked questions
+
+### The plugin is installed but nothing is displayed
+
+- Make sure the "Forums" module is active.
+- Check whether there are any forum posts matching the specified categories and accessible to the user.
+- Temporarily enable debugging in `config.php` (`$cfg['debug_mode'] = true;`) to see possible SQL errors.
+
+### How to display posts from several categories?
+
+Pass an array of category codes as the second parameter:
+
+```smarty
+{PHP|cot_forums_getLastPosts(10, ['news', 'events', 'reviews'])}
+```
+
+### Posts from a required category are not displayed
+
+- Is the "Consider access rights" setting enabled? The current user may not have read access to that category.
+- Check the exact spelling of the category code (it is case-sensitive and must match the code in the forum structure).
+- Posts from private and hidden sections are excluded automatically.
+
+### Can I use multiple blocks with different settings on the same page?
+
+Yes, you can call the function as many times as you need with different parameters and templates.
+
+## License
+
+BSD License. Free distribution and modification provided the copyright is preserved.
+
+## Author and support
+
+- **Author:** webitproff  
+- **Repository:** [github.com/webitproff/getlastposts-cotonti](https://github.com/webitproff/getlastposts-cotonti)  
+- **Help and discussion:** [abuyfile.com/ru/forums/cotonti](https://abuyfile.com/ru/forums/cotonti)  
+
+If you found a bug or have suggestions, create an [issue](https://github.com/webitproff/getlastposts-cotonti/issues) in the repository.
+
+___
+
 # Get Last Forum Posts — плагин для Cotonti
 
 Выводит последние сообщения форума в любом месте сайта одним вызовом функции в шаблоне.
