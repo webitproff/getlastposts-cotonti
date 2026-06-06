@@ -57,7 +57,10 @@ function cot_forums_getLastPosts($count = 5, $category = null, $template = 'getl
     if ($category === '' || $category === false || $category === null) {
         $category = null;
     }
-
+    // Поддержка передачи категорий через запятую в шаблоне: 'news,events,reviews'
+    if (is_string($category) && $category !== '') {
+        $category = array_map('trim', explode(',', $category));
+    }
     // === БЛОК УЧЁТА ПРАВ ДОСТУПА ===
     // Проверяем настройку плагина 'rightscan' — нужно ли учитывать права доступа к категориям.
     if (Cot::$cfg['plugin']['getlastposts']['rightscan']) {
