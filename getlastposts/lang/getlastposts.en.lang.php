@@ -1,5 +1,5 @@
 <?php
-<?php
+
 /**
  * getlastposts.en.lang.php - English language File
  *
@@ -16,10 +16,6 @@
  * @copyright Copyright (c) webitproff 2026 | https://github.com/webitproff
  * @license BSD
  */
-defined('COT_CODE') or die('Wrong URL.');
-
-$L['getlastposts_title'] = 'Последние сообщения';
-$L['getlastposts_none']  = 'Нет новых сообщений';	
 defined('COT_CODE') or die('Wrong URL.');
 
 $L['getlastposts_title'] = 'Последние сообщения';
