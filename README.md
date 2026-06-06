@@ -5,6 +5,15 @@
 Displays the latest forum posts anywhere on the site with a single function call in a template.  
 Flexible configuration, filtering by categories, and custom templates for each block.
 
+
+<img width="1672" height="941" alt="getlastposts-plug-cotonti-by-webitproff" src="https://github.com/user-attachments/assets/01ef493c-76ab-46ac-b432-df9086a2ee81" />
+
+
+
+
+<img width="1536" height="1024" alt="getlastposts-plug-cotonti-by-webitproff-2" src="https://github.com/user-attachments/assets/196f2938-b2df-4582-8cca-9c50f399d06a" />
+
+
 [![License](https://img.shields.io/badge/license-BSD-blue.svg)](LICENSE)
 
 ## Table of contents
